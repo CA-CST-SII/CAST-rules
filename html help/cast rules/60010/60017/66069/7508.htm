@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="keywords" content="online documentation, web online help, web help, chm2web" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<meta name="generator" content="chm2web Pro 2.85 (unicode)" />
+
+<meta http-equiv="Content-Language" content="en">
+<title>Collection-typed attributes getter must be defined with the
+correct interface</title>
+<link rel="stylesheet" href="../../../../files/helpindex.css" type=
+"text/css">
+<link rel="stylesheet" href="../../../../default.css" type=
+"text/css">
+
+<script type="text/JavaScript" src="../../../../files/supply.js"></script>
+<script type="text/JavaScript">
+chmtop.c2wtopf.pageid = "60010/60017/66069/7508.htm";
+</script>
+
+</head>
+<body><script type="text/JavaScript"> 
+if (window.name != "content") 
+  document.write(" <table width=\"100%\" bgcolor=\"#e1e1e1\"cellspacing=\"2\" cellpadding=\"0\" style=\"border-collapse: collapse; font-family: sans-serif; font-size: 14px; color: #000000; text-decoration: none;  \"> <tr> <td align=\"center\" style=\"border-bottom: 2px solid gray\" > <br>&nbsp;Click <a href=\"../../../../index.html?page=cast%20rules%2F60010%2F60017%2F66069%2F7508.htm\">here</a> to show toolbars of the Web Online Help System: <a href=\"../../../../index.html?page=cast%20rules%2F60010%2F60017%2F66069%2F7508.htm\">show toolbars</a><br>&nbsp;</td></tr></table><br> "); 
+</script>
+<!-- !chm2web! -->
+
+<h4>Collection-typed attributes getter must be defined with the
+correct interface</h4>
+
+<hr>
+
+<h5>Technology</h5>
+
+<p>JEE</p>
+
+<h5>Unified Status</h5>
+
+<p>N/A</p>
+
+<h5>XXL Status</h5>
+
+<p>N/A</p>
+
+<h5>Critical Quality Rule</h5>
+
+<p>No</p>
+
+<h5>Weight in Parent Tech. Criterion</h5>
+
+<p>8</p>
+
+<h5>Rationale</h5>
+
+<p>Hibernate or JPA requires interfaces for collection-typed
+attributes. You must use java.util.Set rather than HashSet, for
+example. At runtime, Hibernate or JPA wraps the HashSet instance
+with an instance of one of Hibernate's own classes in order to
+support lazy collections. Hibernate uses its own implementations of
+the List, Map or Set interfaces. If the getters are not used with
+the correct interface, you may encounter ClassCastException
+issues.</p>
+
+<h5>Description</h5>
+
+<p>Reports all getter of collection-typed persistent attributes
+that don't return the correct interface type (getter can be defined
+on the persistent class itself or an inherited class that
+references a persistent attribute). The type returned by a getter
+must be: For Hibernate: Interface Association Attribute
+java.util.Set set java.util.SortedSet set sort java.util.List list
+java.util.Collection bag or idbag java.util.Map map
+java.util.SortedMap map sort For JPA: Interface Association
+java.util.Set or java.util.List when @OrderBy is used java.util.Map
+when @MapKey is used (javax.persistence.MapKey)
+java.util.Collection, java.util.Set or java.util.List when no
+@OrderBY and no @MapKey is used</p>
+
+<h5>Remediation</h5>
+
+<p>Instead of using a concrete class or the wrong interface, define
+the getter return type with the correct interface.</p>
+
+<h5>Reference</h5>
+
+<p>Hibernate in Action (ISBN 1932394-15-X) p 69 The Java
+Persistence API (ISBN 1-932394-88-5) page 116
+http://www.avaje.org/manydatatypes.html</p>
+
+<h5>Sample</h5>
+
+<pre>
+----&gt; a.hbm.xml
+
+&lt;hibernate-mapping &gt;
+  
+  &lt;class name="A" table ="A"&gt; 
+    &lt;id name="id"&gt;
+      &lt;generator class="increment"/&gt;
+    &lt;/id&gt;
+
+    &lt;set name="b_items" lazy="true" table ="B" sort="natural"&gt; 
+      &lt;key column="B_ID"/&gt;
+      &lt;one-to-many class="B"/&gt;
+    &lt;/array&gt;
+  &lt;/class&gt;
+
+  &lt;class name="B" table="B" lazy="true"&gt;
+    &lt;id name="id" column="B_ID"&gt;
+      &lt;generator class="increment"/&gt;
+    &lt;/id&gt;
+  &lt;/class&gt;
+
+&lt;/hibernate-mapping&gt;
+
+----&gt; A.java
+public class A {
+  private Integer id;
+  private SortedSet&lt;B&gt; b_items;
+
+  ...
+
+  // VIOLATION
+  public TreeSet&lt;B&gt; getB_items() {
+    return b_items;
+  }
+  ...
+}
+</pre>
+
+<h5>Remediation sample</h5>
+
+<pre>
+----&gt; A.java
+
+public class A {
+  private Integer id;
+  private SortedSet&lt;B&gt; b_items;
+
+  ...
+
+  // FIXED
+  public SortedSet&lt;B&gt; getB_items() {
+    return b_items;
+  }
+  ...
+}
+</pre>
+
+<h5>Output</h5>
+
+<p>List all methods that don't return the correct interface for
+collection-typed persistent attributes. It provides the following
+information: - Method Full Name</p>
+
+<h5>Total</h5>
+
+<p>Total getters associated to persistent collection-typed
+attributes</p>
+
+<h5>Metric ID</h5>
+
+<p>7508</p>
+
+<hr>
+
+<p align="right"><a href="http://www.castsoftware.com" target=
+"_blank"><img border="0" src="../../../cast.gif" alt="CAST Website"
+width="174" height="21"></a>
+</p>
+
+<script type="text/JavaScript">
+var fe = FindFrame("toc", top);
+if ((fe != null) && (chmtop.c2wtopf.jstree != null)) {
+  if (chmtop.c2wtopf.FITEMS[chmtop.c2wtopf.pagenum] != chmtop.c2wtopf.pageid)
+    chmtop.c2wtopf.jstree.OpenTreeNode("cast rules/" + chmtop.c2wtopf.pageid);
+}
+</script>
+
+<!-- CHM2WEB -->
+<!-- DO NOT DELETE OR MODIFY THIS CODE WITHOUT 
+     WRITTEN PERMISSION OF A!K RESEARCH LABS -->
+<table width="100%" cellspacing="0" cellpadding="0" 
+style="margin-top: 0pt; border-collapse: collapse;"> 
+<tr> <td align="right" style="background-color:white; border-top: 1px solid gray;"> 
+<a href="http://chm2web.aklabs.com" target="_blank" style="font-family: sans-serif;  font-size: 11px; text-decoration: none;"><font color="gray">Converted from CHM to HTML with <b>chm2web Pro 2.85 (unicode)</b></font></a>
+</td></tr></table> 
+<!-- /CHM2WEB -->
+
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="keywords" content="online documentation, web online help, web help, chm2web" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<meta name="generator" content="chm2web Pro 2.85 (unicode)" />
+
+<meta http-equiv="Content-Language" content="en">
+<title>Avoid "SELECT *" or "SELECT SINGLE *" queries</title>
+<link rel="stylesheet" href="../../../../files/helpindex.css" type=
+"text/css">
+<link rel="stylesheet" href="../../../../default.css" type=
+"text/css">
+
+<script type="text/JavaScript" src="../../../../files/supply.js"></script>
+<script type="text/JavaScript">
+chmtop.c2wtopf.pageid = "60010/60017/61019/7530.htm";
+</script>
+
+</head>
+<body><script type="text/JavaScript"> 
+if (window.name != "content") 
+  document.write(" <table width=\"100%\" bgcolor=\"#e1e1e1\"cellspacing=\"2\" cellpadding=\"0\" style=\"border-collapse: collapse; font-family: sans-serif; font-size: 14px; color: #000000; text-decoration: none;  \"> <tr> <td align=\"center\" style=\"border-bottom: 2px solid gray\" > <br>&nbsp;Click <a href=\"../../../../index.html?page=source%2F60010%2F60017%2F61019%2F7530.htm\">here</a> to show toolbars of the Web Online Help System: <a href=\"../../../../index.html?page=source%2F60010%2F60017%2F61019%2F7530.htm\">show toolbars</a><br>&nbsp;</td></tr></table><br> "); 
+</script>
+<!-- !chm2web! -->
+
+<h4>Avoid "SELECT *" or "SELECT SINGLE *" queries</h4>
+
+<hr>
+
+<h5>Technology</h5>
+
+<p>ABAP</p>
+
+<h5>Unified Status</h5>
+
+<p>N/A</p>
+
+<h5>XXL Status</h5>
+
+<p>N/A</p>
+
+<h5>Critical Quality Rule</h5>
+
+<p>No</p>
+
+<h5>Weight in Parent Tech. Criterion</h5>
+
+<p>8</p>
+
+<h5>Rationale</h5>
+
+<p>A query that retrieves all columns of a table with a SELECT * or
+SELECT SINGLE * can potentially be the source of important
+performance problems: Such performance problems may arise when the
+execution of the query returns a large result sets (many row with
+all the columns may then become a huge amount of data to transport
+over the network). However, there are some exceptions with standard
+tables such as parameter tables. Also, when using such queries, one
+cannot control how the columns will be ordered and returned to the
+client. This can lead to important data inconsistencies and thus
+stability issues.</p>
+
+<h5>Description</h5>
+
+<p>This metric retrieves the ABAP artifacts containing queries
+using the "SELECT *" or "SELECT SINGLE *" statement. It is possible
+to specify some tables as exceptions by setting them in the
+parameters of the rule (you can specify complete names, ex: USR02
+or generic names by using '%' character, ex: T% or BUT%).</p>
+
+<h5>Remediation</h5>
+
+<p>Limit the number of field selected by naming those which are
+expecting only.</p>
+
+<h5>Output</h5>
+
+<p>Associated to each ABAP Artifact with violations, the Quality
+Rule provides: - The number of queries containing "SELECT *" or
+"SELECT SINGLE *"</p>
+
+<h5>Total</h5>
+
+<p>Number of ABAP Artifacts containing OpenSQL queries.</p>
+
+<h5>Metric ID</h5>
+
+<p>7530</p>
+
+<hr>
+
+<p align="right"><a href="http://www.castsoftware.com" target=
+"_blank"><img border="0" src="../../../cast.gif" alt="CAST Website"
+width="174" height="21"></a>
+</p>
+
+<script type="text/JavaScript">
+var fe = FindFrame("toc", top);
+if ((fe != null) && (chmtop.c2wtopf.jstree != null)) {
+  if (chmtop.c2wtopf.FITEMS[chmtop.c2wtopf.pagenum] != chmtop.c2wtopf.pageid)
+    chmtop.c2wtopf.jstree.OpenTreeNode("source/" + chmtop.c2wtopf.pageid);
+}
+</script>
+
+<!-- CHM2WEB -->
+<!-- DO NOT DELETE OR MODIFY THIS CODE WITHOUT 
+     WRITTEN PERMISSION OF A!K RESEARCH LABS -->
+<table width="100%" cellspacing="0" cellpadding="0" 
+style="margin-top: 0pt; border-collapse: collapse;"> 
+<tr> <td align="right" style="background-color:white; border-top: 1px solid gray;"> 
+<a href="http://chm2web.aklabs.com" target="_blank" style="font-family: sans-serif;  font-size: 11px; text-decoration: none;"><font color="gray">Converted from CHM to HTML with <b>chm2web Pro 2.85 (unicode)</b></font></a>
+</td></tr></table> 
+<!-- /CHM2WEB -->
+
+</body>
+</html>

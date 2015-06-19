@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="keywords" content="online documentation, web online help, web help, chm2web" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<meta name="generator" content="chm2web Pro 2.85 (unicode)" />
+
+<meta http-equiv="Content-Language" content="en">
+<title>Abstract Classes should be non copy-assignable</title>
+<link rel="stylesheet" href="../../../../files/helpindex.css" type=
+"text/css">
+<link rel="stylesheet" href="../../../../default.css" type=
+"text/css">
+
+<script type="text/JavaScript" src="../../../../files/supply.js"></script>
+<script type="text/JavaScript">
+chmtop.c2wtopf.pageid = "60010/60016/66069/7926.htm";
+</script>
+
+</head>
+<body><script type="text/JavaScript"> 
+if (window.name != "content") 
+  document.write(" <table width=\"100%\" bgcolor=\"#e1e1e1\"cellspacing=\"2\" cellpadding=\"0\" style=\"border-collapse: collapse; font-family: sans-serif; font-size: 14px; color: #000000; text-decoration: none;  \"> <tr> <td align=\"center\" style=\"border-bottom: 2px solid gray\" > <br>&nbsp;Click <a href=\"../../../../index.html?page=source%2F60010%2F60016%2F66069%2F7926.htm\">here</a> to show toolbars of the Web Online Help System: <a href=\"../../../../index.html?page=source%2F60010%2F60016%2F66069%2F7926.htm\">show toolbars</a><br>&nbsp;</td></tr></table><br> "); 
+</script>
+<!-- !chm2web! -->
+
+<h4>Abstract Classes should be non copy-assignable</h4>
+
+<hr>
+
+<h5>Technology</h5>
+
+<p>C++</p>
+
+<h5>Unified Status</h5>
+
+<p>N/A</p>
+
+<h5>XXL Status</h5>
+
+<p>N/A</p>
+
+<h5>Critical Quality Rule</h5>
+
+<p>No</p>
+
+<h5>Weight in Parent Tech. Criterion</h5>
+
+<p>1</p>
+
+<h5>Rationale</h5>
+
+<p>The copy assignment operator lets you create a new object from
+an existing object through initialization. A copy assignment
+operator of a class A is a non-static, non-template member function
+that has one of the following forms: - 'A::operator=(A)' -
+'A::operator=(A&amp;) // This is the most common form' -
+'A::operator=(const A&amp;)' - 'A::operator=(volatile A&amp;)' -
+'A::operator=(const volatile A&amp;)' If you do not declare a copy
+assignment operator for a class A, the compiler will implicitly
+declare one for you which will be public. Assignment operators
+using pointers are also taken into account: - 'A::operator=(A*)' -
+'A::operator=(const A*)' - 'A::operator=(volatile A*)' -
+'A::operator=(const volatile A*)' The problem with these
+assignments is that abstract classes are used to manipulate
+instances of concrete derived classes through a common interface.
+Which means that if you provide a user accessible assignment
+operator, you will end up: - Either doing partial assignment and
+only copying members from the base class - Or doing mixed-type
+assignment if you declared the 'operator=' as 'virtual', which is
+not recommended. By ensuring that the copy assignment operator is
+protected, it can only be called by a derived class, for instance
+when the class wants to implement its own assignment operator. Note
+that most of the time, the concrete derived classes will not
+provide an assignment operator either, since they will be
+manipulated through pointers to their base classes, and an
+additional operation might not prove particularly useful.</p>
+
+<h5>Description</h5>
+
+<p>This rule searches for abstract C++ classes/structs that define
+at least one public copy assignment operator.</p>
+
+<h5>Remediation</h5>
+
+<p>Make the operator protected and non-virtual. Create it if it is
+not present. Optionally define a non virtual version in the
+concrete classes.</p>
+
+<h5>Reference</h5>
+
+<p>More Effective C++, Item 33 High Integrity C++, Rule 3.3.14</p>
+
+<h5>Sample</h5>
+
+<pre>
+class Vegetable 
+{ 
+public: 
+    virtual void f() = 0;
+    /*virtual*/ Vegetable&amp; operator=(const vegetable &amp; v); // should have protected access 
+}; 
+
+class Carrot : public Vegetable 
+{ 
+private:
+    double length;
+}; 
+
+class Broccoli : public Vegetable 
+{ 
+private:
+    int flowerHeadCount;
+}; 
+
+void foo() 
+{ 
+   Carrot obj1; 
+   Broccoli obj2; 
+   Vegetable* ptr1 = &amp;obj1; 
+   Vegetable* ptr2 = &amp;obj2; 
+   *ptr1 = *ptr2; // problem: partial assignment or mixed type assignment 
+}
+</pre>
+
+<h5>Remediation sample</h5>
+
+<pre>
+class Vegetable 
+{ 
+public: 
+    virtual void f() = 0;
+protected:
+    Vegetable&amp; operator=(const Vegetable &amp;); 
+}; 
+
+class Carrot : public Vegetable 
+{ 
+public: 
+    Carrot&amp; operator=( const Carrot&amp; c); 
+private:
+    double length;
+}; 
+
+void foo() 
+{ 
+   Carrot carrot1, carrot2; 
+   Broccoli broccoli1; 
+   Vegetable* ptr1 = &amp;carrot1; 
+   Vegetable* ptr2 = &amp;broccoli1; 
+   *ptr1 = *ptr2; // Compilation error, which is a good thing 
+   carrot2 = carrot1; // Ok
+}
+</pre>
+
+<h5>Output</h5>
+
+<p>Associated to each C++ class and struct with violations, the
+Quality Rule provides: - The number of violation patterns -
+Bookmarks for violation patterns found in the source code: -
+Explicit public assignment operator or class if missing</p>
+
+<h5>Total</h5>
+
+<p>Number of C++ Classes and Structs</p>
+
+<h5>Metric ID</h5>
+
+<p>7926</p>
+
+<hr>
+
+<p align="right"><a href="http://www.castsoftware.com" target=
+"_blank"><img border="0" src="../../../cast.gif" alt="CAST Website"
+width="174" height="21"></a>
+</p>
+
+<script type="text/JavaScript">
+var fe = FindFrame("toc", top);
+if ((fe != null) && (chmtop.c2wtopf.jstree != null)) {
+  if (chmtop.c2wtopf.FITEMS[chmtop.c2wtopf.pagenum] != chmtop.c2wtopf.pageid)
+    chmtop.c2wtopf.jstree.OpenTreeNode("source/" + chmtop.c2wtopf.pageid);
+}
+</script>
+
+<!-- CHM2WEB -->
+<!-- DO NOT DELETE OR MODIFY THIS CODE WITHOUT 
+     WRITTEN PERMISSION OF A!K RESEARCH LABS -->
+<table width="100%" cellspacing="0" cellpadding="0" 
+style="margin-top: 0pt; border-collapse: collapse;"> 
+<tr> <td align="right" style="background-color:white; border-top: 1px solid gray;"> 
+<a href="http://chm2web.aklabs.com" target="_blank" style="font-family: sans-serif;  font-size: 11px; text-decoration: none;"><font color="gray">Converted from CHM to HTML with <b>chm2web Pro 2.85 (unicode)</b></font></a>
+</td></tr></table> 
+<!-- /CHM2WEB -->
+
+</body>
+</html>

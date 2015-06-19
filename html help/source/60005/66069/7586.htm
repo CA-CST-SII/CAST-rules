@@ -1,0 +1,188 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="keywords" content="online documentation, web online help, web help, chm2web" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<meta name="generator" content="chm2web Pro 2.85 (unicode)" />
+
+<meta http-equiv="Content-Language" content="en">
+<title>Avoid cyclic calls between Event and its handled
+Method</title>
+<link rel="stylesheet" href="../../../files/helpindex.css" type=
+"text/css">
+<link rel="stylesheet" href="../../../default.css" type="text/css">
+
+<script type="text/JavaScript" src="../../../files/supply.js"></script>
+<script type="text/JavaScript">
+chmtop.c2wtopf.pageid = "60005/66069/7586.htm";
+</script>
+
+</head>
+<body><script type="text/JavaScript"> 
+if (window.name != "content") 
+  document.write(" <table width=\"100%\" bgcolor=\"#e1e1e1\"cellspacing=\"2\" cellpadding=\"0\" style=\"border-collapse: collapse; font-family: sans-serif; font-size: 14px; color: #000000; text-decoration: none;  \"> <tr> <td align=\"center\" style=\"border-bottom: 2px solid gray\" > <br>&nbsp;Click <a href=\"../../../index.html?page=source%2F60005%2F66069%2F7586.htm\">here</a> to show toolbars of the Web Online Help System: <a href=\"../../../index.html?page=source%2F60005%2F66069%2F7586.htm\">show toolbars</a><br>&nbsp;</td></tr></table><br> "); 
+</script>
+<!-- !chm2web! -->
+
+<h4>Avoid cyclic calls between Event and its handled Method</h4>
+
+<hr>
+
+<h5>Technology</h5>
+
+<p>ABAP</p>
+
+<h5>Unified Status</h5>
+
+<p>N/A</p>
+
+<h5>XXL Status</h5>
+
+<p>N/A</p>
+
+<h5>Critical Quality Rule</h5>
+
+<p>No</p>
+
+<h5>Weight in Parent Tech. Criterion</h5>
+
+<p>9</p>
+
+<h5>Rationale</h5>
+
+<p>A method handled by an event must not reactivate this event
+directly or indirectly via other called methods. Such a cycle based
+on event and methods can cause unpredictable behaviors.</p>
+
+<h5>Description</h5>
+
+<p>This report shows ABAP Event Methods that are handled by an Abap
+Event and that activate this Abap Event, directly or indirectly by
+calling other Abap Methods. A cycle can be created by : - a
+sequence based on an Abap Event calling an Abap Event Method
+calling this Abap Event - a sequence based on an Abap Event calling
+an Abap Event Method calling an Abap Method calling the same Abap
+Event (the maximum number of Abap Methods is set to 2) - several
+sequences of Abap Event E1 calling . . . Abap Event E2</p>
+
+<h5>Remediation</h5>
+
+<p>Try to remove cyclic calls between events and handled
+methods.</p>
+
+<h5>Sample</h5>
+
+<pre>
+CLASS myClass DEFINITION.
+  PUBLIC SECTION.
+    METHODS increment_counter.
+    METHODS handle_excess 
+            FOR EVENT critical_value OF myClass
+            IMPORTING excess.
+    METHODS increment.
+    EVENTS  critical_value EXPORTING value(excess) TYPE i.
+  PRIVATE SECTION.
+    DATA: count1     TYPE i,
+          threshold TYPE i VALUE 10.
+ENDCLASS.
+
+CLASS myClass IMPLEMENTATION.
+  METHOD increment_counter.
+    DATA diff TYPE i.
+    ADD 1 TO count1.
+    IF count1 &gt; threshold.
+      diff = count1 - threshold.
+      RAISE EVENT critical_value EXPORTING excess = diff.
+    ENDIF.
+  ENDMETHOD.
+  METHOD handle_excess.
+* In the following lines, a cycle occurs
+    IF threshold &gt; 5
+      CALL METHOD me-&gt;increment.
+    ENDIF.
+  ENDMETHOD.
+  METHOD increment.
+    ADD 1 TO count1.
+  ENDMETHOD.
+ENDCLASS.
+</pre>
+
+<h5>Remediation sample</h5>
+
+<pre>
+CLASS myClass DEFINITION.
+  PUBLIC SECTION.
+    METHODS increment_counter.
+    METHODS handle_excess 
+            FOR EVENT critical_value OF myClass
+            IMPORTING excess.
+    METHODS increment.
+    EVENTS  critical_value EXPORTING value(excess) TYPE i.
+  PRIVATE SECTION.
+    DATA: count1     TYPE i,
+          threshold TYPE i VALUE 10.
+ENDCLASS.
+
+CLASS myClass IMPLEMENTATION.
+  METHOD increment_counter.
+    DATA diff TYPE i.
+    ADD 1 TO count1.
+    IF count1 &gt; threshold.
+      diff = count1 - threshold.
+      RAISE EVENT critical_value EXPORTING excess = diff.
+    ENDIF.
+  ENDMETHOD.
+  METHOD handle_excess.
+    IF threshold &gt; 5
+*      CALL METHOD me-&gt;increment.
+      write / count1.
+    ENDIF.
+  ENDMETHOD.
+  METHOD increment.
+    ADD 1 TO count1.
+  ENDMETHOD.
+ENDCLASS.
+</pre>
+
+<h5>Output</h5>
+
+<p>Associated to each ABAP Event Method with violations, the
+Quality Rule provides: - The ABAP Event name</p>
+
+<h5>Total</h5>
+
+<p>Number of Abap Event Methods called by an Abap Event</p>
+
+<h5>Metric ID</h5>
+
+<p>7586</p>
+
+<hr>
+
+<p align="right"><a href="http://www.castsoftware.com" target=
+"_blank"><img border="0" src="../../cast.gif" alt="CAST Website"
+width="174" height="21"></a>
+</p>
+
+<script type="text/JavaScript">
+var fe = FindFrame("toc", top);
+if ((fe != null) && (chmtop.c2wtopf.jstree != null)) {
+  if (chmtop.c2wtopf.FITEMS[chmtop.c2wtopf.pagenum] != chmtop.c2wtopf.pageid)
+    chmtop.c2wtopf.jstree.OpenTreeNode("source/" + chmtop.c2wtopf.pageid);
+}
+</script>
+
+<!-- CHM2WEB -->
+<!-- DO NOT DELETE OR MODIFY THIS CODE WITHOUT 
+     WRITTEN PERMISSION OF A!K RESEARCH LABS -->
+<table width="100%" cellspacing="0" cellpadding="0" 
+style="margin-top: 0pt; border-collapse: collapse;"> 
+<tr> <td align="right" style="background-color:white; border-top: 1px solid gray;"> 
+<a href="http://chm2web.aklabs.com" target="_blank" style="font-family: sans-serif;  font-size: 11px; text-decoration: none;"><font color="gray">Converted from CHM to HTML with <b>chm2web Pro 2.85 (unicode)</b></font></a>
+</td></tr></table> 
+<!-- /CHM2WEB -->
+
+</body>
+</html>

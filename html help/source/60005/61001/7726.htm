@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="keywords" content="online documentation, web online help, web help, chm2web" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<meta name="generator" content="chm2web Pro 2.85 (unicode)" />
+
+<meta http-equiv="Content-Language" content="en">
+<title>Avoid Action artifacts that call packages that reference
+database</title>
+<link rel="stylesheet" href="../../../files/helpindex.css" type=
+"text/css">
+<link rel="stylesheet" href="../../../default.css" type="text/css">
+
+<script type="text/JavaScript" src="../../../files/supply.js"></script>
+<script type="text/JavaScript">
+chmtop.c2wtopf.pageid = "60005/61001/7726.htm";
+</script>
+
+</head>
+<body><script type="text/JavaScript"> 
+if (window.name != "content") 
+  document.write(" <table width=\"100%\" bgcolor=\"#e1e1e1\"cellspacing=\"2\" cellpadding=\"0\" style=\"border-collapse: collapse; font-family: sans-serif; font-size: 14px; color: #000000; text-decoration: none;  \"> <tr> <td align=\"center\" style=\"border-bottom: 2px solid gray\" > <br>&nbsp;Click <a href=\"../../../index.html?page=source%2F60005%2F61001%2F7726.htm\">here</a> to show toolbars of the Web Online Help System: <a href=\"../../../index.html?page=source%2F60005%2F61001%2F7726.htm\">show toolbars</a><br>&nbsp;</td></tr></table><br> "); 
+</script>
+<!-- !chm2web! -->
+
+<h4>Avoid Action artifacts that call packages that reference
+database</h4>
+
+<hr>
+
+<h5>Technology</h5>
+
+<p>JEE</p>
+
+<h5>Unified Status</h5>
+
+<p>N/A</p>
+
+<h5>XXL Status</h5>
+
+<p>N/A</p>
+
+<h5>Critical Quality Rule</h5>
+
+<p>No</p>
+
+<h5>Weight in Parent Tech. Criterion</h5>
+
+<p>8</p>
+
+<h5>Rationale</h5>
+
+<p>Struts is a Framework for building Model-View-Controller 2 Web
+applications. This model is the Blueprints recommended
+architectural design pattern for interactive applications. The
+logical separation between presentation layer, the business logic
+layer, and the data access layer is basically an architectural way
+to minimize the amount of additional work necessary to add features
+to any layer that can be consumed by another layer. It separates
+design concerns (data persistence and behavior, presentation, and
+control), decreasing code duplication, centralizing control, and
+making the application more easily modifiable. MVC 2 also helps
+developers with different skill sets to focus on their core skills
+and collaborate through clearly defined interfaces. This is why the
+data access layer must be distinct from the business layer.</p>
+
+<h5>Description</h5>
+
+<p>Find all Action Classes (and parent classes) that are referenced
+in the struts-config.xml through the tag 'action-mapping' (in
+struts 1.x) or in struts.xml and its included files through the tag
+'action' (in struts 2.x) list artifacts that call classes
+referenced in a package that reference directly the database or
+reference JPA or Hibernate Entities.</p>
+
+<h5>Remediation</h5>
+
+<p>Review the design in order to separate the model from the data
+access layer.</p>
+
+<h5>Output</h5>
+
+<p>This report lists all action artifacts that call a package that
+reference database or reference JPA or Hibernate Entities. It
+provides the following information: Artifact full name, the package
+that reference the database</p>
+
+<h5>Total</h5>
+
+<p>The total number of artifacts of classes and parent classes that
+are referenced as an action in the XML configuration file(s).</p>
+
+<h5>Metric ID</h5>
+
+<p>7726</p>
+
+<hr>
+
+<p align="right"><a href="http://www.castsoftware.com" target=
+"_blank"><img border="0" src="../../cast.gif" alt="CAST Website"
+width="174" height="21"></a>
+</p>
+
+<script type="text/JavaScript">
+var fe = FindFrame("toc", top);
+if ((fe != null) && (chmtop.c2wtopf.jstree != null)) {
+  if (chmtop.c2wtopf.FITEMS[chmtop.c2wtopf.pagenum] != chmtop.c2wtopf.pageid)
+    chmtop.c2wtopf.jstree.OpenTreeNode("source/" + chmtop.c2wtopf.pageid);
+}
+</script>
+
+<!-- CHM2WEB -->
+<!-- DO NOT DELETE OR MODIFY THIS CODE WITHOUT 
+     WRITTEN PERMISSION OF A!K RESEARCH LABS -->
+<table width="100%" cellspacing="0" cellpadding="0" 
+style="margin-top: 0pt; border-collapse: collapse;"> 
+<tr> <td align="right" style="background-color:white; border-top: 1px solid gray;"> 
+<a href="http://chm2web.aklabs.com" target="_blank" style="font-family: sans-serif;  font-size: 11px; text-decoration: none;"><font color="gray">Converted from CHM to HTML with <b>chm2web Pro 2.85 (unicode)</b></font></a>
+</td></tr></table> 
+<!-- /CHM2WEB -->
+
+</body>
+</html>

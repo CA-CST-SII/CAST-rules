@@ -1,0 +1,252 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="keywords" content="online documentation, web online help, web help, chm2web" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<meta name="generator" content="chm2web Pro 2.85 (unicode)" />
+
+<meta http-equiv="Content-Language" content="en">
+<title>Close database resources ASAP</title>
+<link rel="stylesheet" href="../../../../files/helpindex.css" type=
+"text/css">
+<link rel="stylesheet" href="../../../../default.css" type=
+"text/css">
+
+<script type="text/JavaScript" src="../../../../files/supply.js"></script>
+<script type="text/JavaScript">
+chmtop.c2wtopf.pageid = "60010/60016/61018/8104.htm";
+</script>
+
+</head>
+<body><script type="text/JavaScript"> 
+if (window.name != "content") 
+  document.write(" <table width=\"100%\" bgcolor=\"#e1e1e1\"cellspacing=\"2\" cellpadding=\"0\" style=\"border-collapse: collapse; font-family: sans-serif; font-size: 14px; color: #000000; text-decoration: none;  \"> <tr> <td align=\"center\" style=\"border-bottom: 2px solid gray\" > <br>&nbsp;Click <a href=\"../../../../index.html?page=source%2F60010%2F60016%2F61018%2F8104.htm\">here</a> to show toolbars of the Web Online Help System: <a href=\"../../../../index.html?page=source%2F60010%2F60016%2F61018%2F8104.htm\">show toolbars</a><br>&nbsp;</td></tr></table><br> "); 
+</script>
+<!-- !chm2web! -->
+
+<h4>Close database resources ASAP</h4>
+
+<hr>
+
+<h5>Technology</h5>
+
+<p>JEE</p>
+
+<h5>Unified Status</h5>
+
+<p>N/A</p>
+
+<h5>XXL Status</h5>
+
+<p>N/A</p>
+
+<h5>Critical Quality Rule</h5>
+
+<p>Yes</p>
+
+<h5>Weight in Parent Tech. Criterion</h5>
+
+<p>8</p>
+
+<h5>Rationale</h5>
+
+<p>A frequent issue when dealing with database resource is resource
+leak. This mainly comes from an incorrect code that miss to close
+the connection in any cases. Incorrect resource management is a
+common source of failures in production applications, with the
+usual pitfalls being database connections and file descriptors
+remaining opened after an exception has occurred somewhere else in
+the code. This leads to application servers being frequently
+restarted when resource exhaustion occurs, because operating
+systems and server applications generally have an upper-bound limit
+for resources.</p>
+
+<h5>Description</h5>
+
+<p>The following methods are taken into account: - JDBC: . open:
+java.sql.DriverManager.getConnection(String) . close:
+java.sql.Connection.close() - JDBC: . open:
+java.sql.Connection.createStatement() . close:
+java.sql.Statement.close() - JDBC: . open:
+java.sql.Connection.prepareStatement(...) . close:
+java.sql.PreparedStatement.close() - JDBC: . open:
+java.sql.Connection.prepareCall(...) . close:
+java.sql.CallableStatement.close() - JDBC: . open:
+java.sql.PreparedStatement.executeQuery() . close:
+java.sql.ResultSet.close() - JPA: . open:
+javax.persistence.Persistence.createEntityManagerFactory(String) .
+close: javax.persistence.EntityManagerFactory.close() - JPA: .
+open: javax.persistence.EntityManagerFactory.createEntityManager()
+. close: javax.persistence.EntityManager.close() - Hibernate: .
+open: org.hibernate.SessionFactory.openSession() . close:
+org.hibernate.Session.close() - Hibernate: . open:
+org.hibernate.cfg.Configuration.buildSessionFactory() . close:
+org.hibernate.SessionFactory.close() - Spring: . open:
+org.springframework.orm.hibernate3.SessionFactoryUtils.getSession(...)
+. close:
+org.springframework.orm.hibernate3.SessionFactoryUtils.closeSession(...)</p>
+
+<h5>Remediation</h5>
+
+<p>You can: - close the resource in a finally block. - or annotate
+this resource with @Cleanup annotation (lombok.Cleanup) - or use
+the try with resource to declare the resource that must be closed
+(available in java 7) - or use Spring JDBC Template that open and
+close the connection for you
+(http://static.springsource.org/spring/docs/3.2.x/spring-framework-reference/html/jdbc.html)
+- or use CDI with @Dispose annotation</p>
+
+<h5>Reference</h5>
+
+<p>http://www.java7developer.com/blog/?p=24
+http://static.springsource.org/spring/docs/3.2.x/spring-framework-reference/html/jdbc.html
+http://projectlombok.org/features/Cleanup.html</p>
+
+<h5>Sample</h5>
+
+<pre>
+String connectionURL = 'jdbc:mysql://localhost:3306/myDB';
+Connection connection = null;
+Statement st = null;
+ResultSet rs = null;
+try {
+    Class.forName('com.mysql.jdbc.Driver').newInstance();
+    connection = DriverManager.getConnection(connectionURL, 'root', 'admin');
+    st = connection.createStatement();
+    rs = st.executeQuery('Select * from EMPLOYEE_SALARIES');
+    while (rs.next()) {
+        System.out.println('EMPLOYEE_NAME/EMPLOYEE_SALARY');
+        System.out.println(rs.getString(1) + '/' + rs.getString(2));
+    } 
+    rs.close(); 
+    st.close();
+    connection.close();
+} catch (Exception ex) {
+    ex.printStackTrace();
+}  // VIOLATION, rs, st and connection must be closed in a finally
+</pre>
+
+<h5>Remediation sample</h5>
+
+<pre>
+with finally
+~~~~~~~~~~~~
+String connectionURL = 'jdbc:mysql://localhost:3306/myDB';
+Connection connection = null;
+Statement st = null;
+ResultSet rs = null;
+try {
+    Class.forName('com.mysql.jdbc.Driver').newInstance();
+    connection = DriverManager.getConnection(connectionURL, 'root', 'admin');
+    st = connection.createStatement();
+    rs = st.executeQuery('Select * from EMPLOYEE_SALARIES');
+    while (rs.next()) {
+        System.out.println('EMPLOYEE_NAME/EMPLOYEE_SALARY');
+        System.out.println(rs.getString(1) + '/' + rs.getString(2));
+    }
+} catch (Exception ex) {
+    ex.printStackTrace();
+} finally { // FIX
+    try {
+        if (rs != null &amp;&amp; !rs.isClosed()) {
+            rs.close();
+        }
+        if (st != null &amp;&amp; !st.isClosed()) {
+            st.close();
+        }
+        if (connection != null &amp;&amp; !connection.isClosed()) {
+            connection.close();
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+    }
+}
+
+with Java 7
+~~~~~~~~~~~~~~
+String connectionURL = 'jdbc:mysql://localhost:3306/myDB';
+try ( // FIX
+    Connection connection =
+        DriverManager.getConnection(connectionURL, 'root', 'admin');
+    Statement st = connection.createStatement();
+    ResultSet rs = st.executeQuery('Select * from EMPLOYEE_SALARIES');
+) {
+    Class.forName('com.mysql.jdbc.Driver').newInstance();
+    while (rs.next())
+    {
+        System.out.println('EMPLOYEE_NAME/EMPLOYEE_SALARY');
+        System.out.println(rs.getString(1) + '/' + rs.getString(2));
+    }
+}
+
+with annotation @Cleanup
+~~~~~~~~~~~~~~~~~~~~~~~~
+String connectionURL = 'jdbc:mysql://localhost:3306/myDB';
+@Cleanup Connection connection = null; // FIX
+@Cleanup Statement st = null; // FIX
+@Cleanup ResultSet rs = null; // FIX
+
+Class.forName('com.mysql.jdbc.Driver').newInstance();
+connection = DriverManager.getConnection(connectionURL, 'root', 'admin');
+st = connection.createStatement();
+rs = st.executeQuery('Select * from EMPLOYEE_SALARIES');
+while (rs.next()) {
+    System.out.println('EMPLOYEE_NAME/EMPLOYEE_SALARY');
+    System.out.println(rs.getString(1) + '/' + rs.getString(2));
+}
+
+with CDI annotation
+~~~~~~~~~~~~~~~~~~~~
+@Produces @RequestScoped
+Connection connect(User) {
+   return createConnection(user.getId(), user.getPassword())
+}
+
+void close (@Disposes Connection connection) {
+   connection.close();
+}
+</pre>
+
+<h5>Output</h5>
+
+<p>This report lists all methods that do not close the SQL
+connections they opened It provides the following information: -
+method full name</p>
+
+<h5>Total</h5>
+
+<p>All the methods that open a database resource in the body</p>
+
+<h5>Metric ID</h5>
+
+<p>8104</p>
+
+<hr>
+
+<p align="right"><a href="http://www.castsoftware.com" target=
+"_blank"><img border="0" src="../../../cast.gif" alt="CAST Website"
+width="174" height="21"></a>
+</p>
+
+<script type="text/JavaScript">
+var fe = FindFrame("toc", top);
+if ((fe != null) && (chmtop.c2wtopf.jstree != null)) {
+  if (chmtop.c2wtopf.FITEMS[chmtop.c2wtopf.pagenum] != chmtop.c2wtopf.pageid)
+    chmtop.c2wtopf.jstree.OpenTreeNode("source/" + chmtop.c2wtopf.pageid);
+}
+</script>
+
+<!-- CHM2WEB -->
+<!-- DO NOT DELETE OR MODIFY THIS CODE WITHOUT 
+     WRITTEN PERMISSION OF A!K RESEARCH LABS -->
+<table width="100%" cellspacing="0" cellpadding="0" 
+style="margin-top: 0pt; border-collapse: collapse;"> 
+<tr> <td align="right" style="background-color:white; border-top: 1px solid gray;"> 
+<a href="http://chm2web.aklabs.com" target="_blank" style="font-family: sans-serif;  font-size: 11px; text-decoration: none;"><font color="gray">Converted from CHM to HTML with <b>chm2web Pro 2.85 (unicode)</b></font></a>
+</td></tr></table> 
+<!-- /CHM2WEB -->
+
+</body>
+</html>

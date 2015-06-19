@@ -1,0 +1,267 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="keywords" content="online documentation, web online help, web help, chm2web" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<meta name="generator" content="chm2web Pro 2.85 (unicode)" />
+
+<meta http-equiv="Content-Language" content="en">
+<title>Avoid Struts 2 Action Fields without Validation</title>
+<link rel="stylesheet" href="../../../../files/helpindex.css" type=
+"text/css">
+<link rel="stylesheet" href="../../../../default.css" type=
+"text/css">
+
+<script type="text/JavaScript" src="../../../../files/supply.js"></script>
+<script type="text/JavaScript">
+chmtop.c2wtopf.pageid = "66030/66031/66062/8040.htm";
+</script>
+
+</head>
+<body><script type="text/JavaScript"> 
+if (window.name != "content") 
+  document.write(" <table width=\"100%\" bgcolor=\"#e1e1e1\"cellspacing=\"2\" cellpadding=\"0\" style=\"border-collapse: collapse; font-family: sans-serif; font-size: 14px; color: #000000; text-decoration: none;  \"> <tr> <td align=\"center\" style=\"border-bottom: 2px solid gray\" > <br>&nbsp;Click <a href=\"../../../../index.html?page=cast%20rules%2F66030%2F66031%2F66062%2F8040.htm\">here</a> to show toolbars of the Web Online Help System: <a href=\"../../../../index.html?page=cast%20rules%2F66030%2F66031%2F66062%2F8040.htm\">show toolbars</a><br>&nbsp;</td></tr></table><br> "); 
+</script>
+<!-- !chm2web! -->
+
+<h4>Avoid Struts 2 Action Fields without Validation</h4>
+
+<hr>
+
+<h5>Technology</h5>
+
+<p>JEE</p>
+
+<h5>Unified Status</h5>
+
+<p>N/A</p>
+
+<h5>XXL Status</h5>
+
+<p>N/A</p>
+
+<h5>Critical Quality Rule</h5>
+
+<p>Yes</p>
+
+<h5>Weight in Parent Tech. Criterion</h5>
+
+<p>9</p>
+
+<h5>Rationale</h5>
+
+<p>Input validation is required to secure an application. Moreover,
+the web interface is exposed to anyone. Non validating input may
+allow injecting arbitrary web script, HTML, SQL... Consequences can
+be severe, like erasing the content of a database. Only one
+invalidated input can be exploited by an attacker. Note that unused
+fields should be constrained so that they can only be empty or
+undefined. If unused fields are not validated, shared business
+logic in an action may allow attackers to bypass the validation
+checks that are performed for other uses of the form.</p>
+
+<h5>Description</h5>
+
+<p>Reports all action classes (and parent) fields (except boolean
+type and final fields) that are : - not referenced directly or
+indirectly (i.e. the field or a call to a getter) in the validate()
+method when the Strut Action class implements it (inherited from
+com.opensymphony.xwork2.Validateable). - not referenced in the
+"Action class name"-validation.xml or "Action class
+name"-"alias"-validation.xml In the case of a Struts Action with
+parent class: - if validation is programmatic through a validate()
+method, then all the fields must be referenced directly or
+indirectly in the validate() method and a call to super.validate()
+in the Struts Action class must be made - if the validation is
+declarative, fields must be referenced in "Parent Action class
+name"-validation.xml or "Parent Action class
+name"-"alias"-validation.xml Note that we suppose that any fields
+(except boolean type and final fields) of the action class must be
+validated even if they are always used as read-only fields by JSP
+pages.</p>
+
+<h5>Remediation</h5>
+
+<p>Validate each field of the action class referenced in the
+methods of the action class called by the Struts framework. You can
+do it either by implementing the validate() method of the
+com.opensymphony.xwork2.ActionSupport class (or
+com.opensymphony.xwork2.Validateable interface) or by updating the
+'Action class'-validation.xml file.</p>
+
+<h5>Reference</h5>
+
+<p>
+http://www.owasp.org/index.php/2004_Updates_OWASP_Top_Ten_Project</p>
+
+<h5>Sample</h5>
+
+<pre>
+==&gt; with the validate() method
+public class Register extends ActionSupport {
+  private String username;
+  private String password; /* VIOLATION: the password is not referenced in the validate() method */
+
+  public String execute(){
+    User user = new User();
+    user.setPassword( getPassword() );
+    user.setUsername( getUsername() );
+    session.put(Constants.USER, user);
+    return SUCCESS;
+  }
+
+  public void validate(){ /* VIOLATION: the password is not referenced in this method */
+    if ( getUsername().length() == 0 ){
+      addFieldError( "username", getText("username.required") );
+    }
+    if (getUsers().userExists(getUsername() ) ){
+      addFieldError("username", getText( "user.exists"));
+    }
+  }
+}
+
+==&gt; with the validation.xml file:
+public class Register extends ActionSupport {
+  private String username;
+  private String password; /* VIOLATION: the password is not referenced in Register-validation.xml */
+
+  public String execute(){
+    User user = new User();
+    user.setPassword( getPassword() );
+    user.setUsername( getUsername() );
+    session.put(Constants.USER, user);
+    return SUCCESS;
+  }
+}
+
+Register-validation.xml
+&lt;validators&gt;
+  &lt;field name="username"&gt;
+      &lt;field-validator type="requiredstring"&gt;
+           &lt;message &gt;Username is required.&lt;/message&gt;
+      &lt;/field-validator&gt;
+      &lt;field-validator type="stringlength"&gt;
+         &lt;param name="maxLength"&gt;8&lt;/param&gt;
+         &lt;param name="minLength"&gt;5&lt;/param&gt;
+         &lt;message&gt;While ${username} is a nice name, a valid username must be between ${minLength} and ${maxLength} characters long. &lt;/message&gt;
+     &lt;/field-validator&gt;
+  &lt;/field&gt;
+&lt;/validators&gt;
+</pre>
+
+<h5>Remediation sample</h5>
+
+<pre>
+public class Register extends ActionSupport {
+  private String username;
+  private String password;
+
+  public String execute(){
+    User user = new User();
+    user.setPassword( getPassword() );
+    user.setUsername( getUsername() );
+    session.put(Constants.USER, user);
+    return SUCCESS;
+  }
+
+  public void validate(){ /* FIXED: the password is referenced in this method */
+    if ( getUsername().length() == 0 ){
+      addFieldError( "username", getText("username.required") );
+    }
+
+ if ( getPassword().length() == 0 ){
+   addFieldError( "password", getText("password.required") );
+    }
+ 
+    if (getUsers().userExists(getUsername() ) ){
+      addFieldError("username", getText( "user.exists"));
+    }
+  }
+}
+
+==&gt; with the validation.xml file:
+public class Register extends ActionSupport {
+  private String username;
+  private String password; /* FIXED: the password referenced in the Register-validation.xml file (2 times) */ 
+
+  public String execute(){
+    User user = new User();
+    user.setPassword( getPassword() );
+    user.setUsername( getUsername() );
+    session.put(Constants.USER, user);
+    return SUCCESS;
+  }
+}
+
+Register-validation.xml
+&lt;validators&gt;
+  &lt;field name="password"&gt;
+      &lt;field-validator type="requiredstring"&gt;
+         &lt;message &gt;Password is required.&lt;/message&gt;
+      &lt;/field-validator&gt;
+      &lt;field-validator type="stringlength"&gt;
+         &lt;param name="maxLength"&gt;10&lt;/param&gt;
+         &lt;param name="minLength"&gt;6&lt;/param&gt;
+         &lt;message&gt;Your password should be 6-10 characters.&lt;/message&gt;
+      &lt;/field-validator&gt;
+  &lt;/field&gt;
+  &lt;field name="username"&gt;
+      &lt;field-validator type="requiredstring"&gt;
+           &lt;message &gt;Username is required.&lt;/message&gt;
+      &lt;/field-validator&gt;
+      &lt;field-validator type="stringlength"&gt;
+         &lt;param name="maxLength"&gt;8&lt;/param&gt;
+         &lt;param name="minLength"&gt;5&lt;/param&gt;
+         &lt;message&gt;While ${username} is a nice name, a valid username must be between ${minLength} and ${maxLength} characters long. &lt;/message&gt;
+     &lt;/field-validator&gt;
+  &lt;/field&gt;
+  &lt;validator type="expression"&gt;
+      &lt;param name="expression"&gt;username != password&lt;/param&gt;
+      &lt;message&gt;Username and password can't be the same.&lt;/message&gt;
+  &lt;/validator&gt;
+&lt;/validators&gt;
+</pre>
+
+<h5>Output</h5>
+
+<p>Report lists all action class (and parent) fields (except
+boolean type) that are not validated. It provides the following
+information: Java action class fields</p>
+
+<h5>Total</h5>
+
+<p>The number of all action class (and parent) fields</p>
+
+<h5>Metric ID</h5>
+
+<p>8040</p>
+
+<hr>
+
+<p align="right"><a href="http://www.castsoftware.com" target=
+"_blank"><img border="0" src="../../../cast.gif" alt="CAST Website"
+width="174" height="21"></a>
+</p>
+
+<script type="text/JavaScript">
+var fe = FindFrame("toc", top);
+if ((fe != null) && (chmtop.c2wtopf.jstree != null)) {
+  if (chmtop.c2wtopf.FITEMS[chmtop.c2wtopf.pagenum] != chmtop.c2wtopf.pageid)
+    chmtop.c2wtopf.jstree.OpenTreeNode("cast rules/" + chmtop.c2wtopf.pageid);
+}
+</script>
+
+<!-- CHM2WEB -->
+<!-- DO NOT DELETE OR MODIFY THIS CODE WITHOUT 
+     WRITTEN PERMISSION OF A!K RESEARCH LABS -->
+<table width="100%" cellspacing="0" cellpadding="0" 
+style="margin-top: 0pt; border-collapse: collapse;"> 
+<tr> <td align="right" style="background-color:white; border-top: 1px solid gray;"> 
+<a href="http://chm2web.aklabs.com" target="_blank" style="font-family: sans-serif;  font-size: 11px; text-decoration: none;"><font color="gray">Converted from CHM to HTML with <b>chm2web Pro 2.85 (unicode)</b></font></a>
+</td></tr></table> 
+<!-- /CHM2WEB -->
+
+</body>
+</html>

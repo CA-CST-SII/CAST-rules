@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="keywords" content="online documentation, web online help, web help, chm2web" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<meta name="generator" content="chm2web Pro 2.85 (unicode)" />
+
+<meta http-equiv="Content-Language" content="en">
+<title>Persistent classes should Implement hashCode() and
+equals()</title>
+<link rel="stylesheet" href="../../../../files/helpindex.css" type=
+"text/css">
+<link rel="stylesheet" href="../../../../default.css" type=
+"text/css">
+
+<script type="text/JavaScript" src="../../../../files/supply.js"></script>
+<script type="text/JavaScript">
+chmtop.c2wtopf.pageid = "60010/60016/66069/7504.htm";
+</script>
+
+</head>
+<body><script type="text/JavaScript"> 
+if (window.name != "content") 
+  document.write(" <table width=\"100%\" bgcolor=\"#e1e1e1\"cellspacing=\"2\" cellpadding=\"0\" style=\"border-collapse: collapse; font-family: sans-serif; font-size: 14px; color: #000000; text-decoration: none;  \"> <tr> <td align=\"center\" style=\"border-bottom: 2px solid gray\" > <br>&nbsp;Click <a href=\"../../../../index.html?page=cast%20rules%2F60010%2F60016%2F66069%2F7504.htm\">here</a> to show toolbars of the Web Online Help System: <a href=\"../../../../index.html?page=cast%20rules%2F60010%2F60016%2F66069%2F7504.htm\">show toolbars</a><br>&nbsp;</td></tr></table><br> "); 
+</script>
+<!-- !chm2web! -->
+
+<h4>Persistent classes should Implement hashCode() and
+equals()</h4>
+
+<hr>
+
+<h5>Technology</h5>
+
+<p>JEE</p>
+
+<h5>Unified Status</h5>
+
+<p>N/A</p>
+
+<h5>XXL Status</h5>
+
+<p>N/A</p>
+
+<h5>Critical Quality Rule</h5>
+
+<p>Yes</p>
+
+<h5>Weight in Parent Tech. Criterion</h5>
+
+<p>9</p>
+
+<h5>Rationale</h5>
+
+<p>Hibernate guarantees that there is a unique instance for each
+row of the database inside a Session. But whenever you work with
+objects in detached state, and especially if you test them for
+equality (usually in hash-based collections), you need to supply
+your own implementation of the equals() and hashCode() methods for
+your persistent classes. This is true for Hibernate standard usage
+but also when used through the JPA API. Nevertheless, it's possible
+to build a complex application with identity (default) equals as
+long as you exercise discipline when dealing with detached objects
+from different sessions. If this concept of equality isn't what you
+want, you must override equals() in your persistent classes.</p>
+
+<h5>Description</h5>
+
+<p>Reports all persistent classes that don't implement equals() or
+hashCode() directly (class that is referenced in the mapping file)
+or in an inherited class that holds persistent fields (this is the
+case when a persistent class makes persistent inherited
+fields).</p>
+
+<h5>Remediation</h5>
+
+<p>Check if you have instances from multiple sessions and implement
+equals() and hashCode() if it is the case. If it is not the case,
+we recommend implementing it anyway to avoid issues during future
+evolutions.</p>
+
+<h5>Reference</h5>
+
+<p>
+http://docs.jboss.org/hibernate/core/3.3/reference/en/html/persistent-classes.html#persistent-classes-equalshashcode
+Hibernate in Action (ISBN 1932394-15-X) p 219 The Java Persistence
+API page 395 - ISBN 1-932394-88-5
+http://www.ideyatech.com/2011/04/effective-java-equals-and-hashcode/</p>
+
+<h5>Sample</h5>
+
+<pre>
+----&gt; a.hbm.xml
+&lt;hibernate-mapping &gt;
+  
+  &lt;class name="A" table ="A"&gt; 
+    &lt;id name="id"&gt;
+      &lt;generator class="increment"/&gt;
+    &lt;/id&gt;
+
+    &lt;set name="b_items" lazy="true" table ="B"&gt; 
+      &lt;key column="B_ID"/&gt;
+      &lt;one-to-many class="B"/&gt;
+    &lt;/array&gt;
+  &lt;/class&gt;
+
+  &lt;class name="B" table="B" lazy="true"&gt;
+    &lt;id name="id" column="B_ID"&gt;
+      &lt;generator class="increment"/&gt;
+    &lt;/id&gt;
+  &lt;/class&gt;
+
+&lt;/hibernate-mapping&gt;
+
+----&gt; B.java
+public class B {
+ private long id;
+ ...
+
+ private void setId(long id) { 
+    this.id = id;
+ }
+
+   public long getId() {
+      return id;
+   }
+  ...
+  // VIOLATION: equals and hashCode are not defined
+}
+</pre>
+
+<h5>Remediation sample</h5>
+
+<pre>
+----&gt; B.java
+public class B {
+  private long id;
+  ...
+
+  private void setId(long id) { 
+    this.id = id;
+  }
+
+   public long getId() {
+      return id;
+   }
+  ...
+
+  // FIXED
+   public boolean equals(Object obj) {
+    ...
+   }
+
+   // FIXED
+   public int hashCode() {
+     ...
+    }
+}
+</pre>
+
+<h5>Output</h5>
+
+<p>List all Hibernate and JPA persistent classes that don't
+implement equals() or hashCode() directly or in an inherited class
+that holds persistent fields. It provides the following
+information: - Class Full Name</p>
+
+<h5>Total</h5>
+
+<p>The number of persistent classes (through Hibernate or JPA)</p>
+
+<h5>Metric ID</h5>
+
+<p>7504</p>
+
+<hr>
+
+<p align="right"><a href="http://www.castsoftware.com" target=
+"_blank"><img border="0" src="../../../cast.gif" alt="CAST Website"
+width="174" height="21"></a>
+</p>
+
+<script type="text/JavaScript">
+var fe = FindFrame("toc", top);
+if ((fe != null) && (chmtop.c2wtopf.jstree != null)) {
+  if (chmtop.c2wtopf.FITEMS[chmtop.c2wtopf.pagenum] != chmtop.c2wtopf.pageid)
+    chmtop.c2wtopf.jstree.OpenTreeNode("cast rules/" + chmtop.c2wtopf.pageid);
+}
+</script>
+
+<!-- CHM2WEB -->
+<!-- DO NOT DELETE OR MODIFY THIS CODE WITHOUT 
+     WRITTEN PERMISSION OF A!K RESEARCH LABS -->
+<table width="100%" cellspacing="0" cellpadding="0" 
+style="margin-top: 0pt; border-collapse: collapse;"> 
+<tr> <td align="right" style="background-color:white; border-top: 1px solid gray;"> 
+<a href="http://chm2web.aklabs.com" target="_blank" style="font-family: sans-serif;  font-size: 11px; text-decoration: none;"><font color="gray">Converted from CHM to HTML with <b>chm2web Pro 2.85 (unicode)</b></font></a>
+</td></tr></table> 
+<!-- /CHM2WEB -->
+
+</body>
+</html>

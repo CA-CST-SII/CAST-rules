@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="keywords" content="online documentation, web online help, web help, chm2web" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<meta name="generator" content="chm2web Pro 2.85 (unicode)" />
+
+<meta http-equiv="Content-Language" content="en">
+<title>Casting from pointer to base Class to pointer to derived
+Class should be done through 'dynamic_cast' or
+'static_cast'</title>
+<link rel="stylesheet" href="../../../files/helpindex.css" type=
+"text/css">
+<link rel="stylesheet" href="../../../default.css" type="text/css">
+
+<script type="text/JavaScript" src="../../../files/supply.js"></script>
+<script type="text/JavaScript">
+chmtop.c2wtopf.pageid = "language/c/8078.htm";
+</script>
+
+</head>
+<body><script type="text/JavaScript"> 
+if (window.name != "content") 
+  document.write(" <table width=\"100%\" bgcolor=\"#e1e1e1\"cellspacing=\"2\" cellpadding=\"0\" style=\"border-collapse: collapse; font-family: sans-serif; font-size: 14px; color: #000000; text-decoration: none;  \"> <tr> <td align=\"center\" style=\"border-bottom: 2px solid gray\" > <br>&nbsp;Click <a href=\"../../../index.html?page=source%2Flanguage%2Fc%2F8078.htm\">here</a> to show toolbars of the Web Online Help System: <a href=\"../../../index.html?page=source%2Flanguage%2Fc%2F8078.htm\">show toolbars</a><br>&nbsp;</td></tr></table><br> "); 
+</script>
+<!-- !chm2web! -->
+
+<h4>Casting from pointer to base Class to pointer to derived Class
+should be done through 'dynamic_cast' or 'static_cast'</h4>
+
+<hr>
+
+<h5>Technology</h5>
+
+<p>C Language, C++</p>
+
+<h5>Unified Status</h5>
+
+<p>N/A</p>
+
+<h5>XXL Status</h5>
+
+<p>N/A</p>
+
+<h5>Critical Quality Rule</h5>
+
+<p>Yes</p>
+
+<h5>Weight in Parent Tech. Criterion</h5>
+
+<p>9</p>
+
+<h5>Rationale</h5>
+
+<p>Casting from pointer to base class to pointer to derived class
+should usually be done through 'dynamic_cast'. See rule #8060 for
+more information. In performances-constrained situations, and if
+you know through another mean that the 'dynamic_cast' will succeed,
+you can instead call 'static_cast', which will be slightly more
+efficient. In this case, it is advised to write code that will
+check in debug builds that the assumption is true. In any case, a
+C-style cast is unsafe to use, because it will be considered as a
+'reinterpret_cast' if the classes are not related, and will do the
+wrong thing.</p>
+
+<h5>Description</h5>
+
+<p>This rule searches for C++ functions that do not cast a pointer
+to a base class to a pointer to a derived class by using a
+'static_cast' or a 'dynamic_cast'.</p>
+
+<h5>Remediation</h5>
+
+<p>Use 'dynamic_cast' or 'static_cast' to cast pointers to base
+class to pointer to derived class. See remediation example for more
+details.</p>
+
+<h5>Reference</h5>
+
+<p>MISRA C++ C++ Coding Standard (Sutter/Alexandrescu) Item 93,
+http://www.gotw.ca/publications/c++cs.htm</p>
+
+<h5>Sample</h5>
+
+<pre>
+class A
+{
+};
+
+class B : public A
+{
+};
+
+void f(A *p)
+{
+    B* pb = (B*)p; // Violation
+    // Use pb
+}
+</pre>
+
+<h5>Remediation sample</h5>
+
+<pre>
+void f(A *p)
+{
+    B* pb = dynamic_cast&lt;B*&gt;(p);
+    if (!pb)
+    {
+        // Not the expected type, handle the error 
+    }
+    else
+    {
+        // Use pb
+    }
+}
+
+In circumstances where the @dynamic_cast@ has been measured to cause unacceptable delay, a @static_cast@ could be used instead, but would benefit from being written this way:
+
+template&lt;class To, class From&gt; To checked_cast(From* p)
+{
+    assert(dynamic_cast&lt;To&gt;(p) == static_cast&lt;To&gt;(p) &amp;&amp; "Error: Check cast failed");
+    return static_cast&lt;To&gt;(p);
+}
+
+void f(A *p)
+{
+    B* pb = checked_cast&lt;B*&gt;(p);
+    // Use pb
+}
+</pre>
+
+<h5>Output</h5>
+
+<p>Associated to each C++ method, constructor, and destructor with
+violations, the Quality Rule provides: - pointer incorrectly casted
+- Bookmarks for violation patterns found in source code: - pointer
+cast - source class - target class</p>
+
+<h5>Total</h5>
+
+<p>Number of C++ methods, constructors, and destructors</p>
+
+<h5>Metric ID</h5>
+
+<p>8078</p>
+
+<hr>
+
+<p align="right"><a href="http://www.castsoftware.com" target=
+"_blank"><img border="0" src="../../cast.gif" alt="CAST Website"
+width="174" height="21"></a>
+</p>
+
+<script type="text/JavaScript">
+var fe = FindFrame("toc", top);
+if ((fe != null) && (chmtop.c2wtopf.jstree != null)) {
+  if (chmtop.c2wtopf.FITEMS[chmtop.c2wtopf.pagenum] != chmtop.c2wtopf.pageid)
+    chmtop.c2wtopf.jstree.OpenTreeNode("source/" + chmtop.c2wtopf.pageid);
+}
+</script>
+
+<!-- CHM2WEB -->
+<!-- DO NOT DELETE OR MODIFY THIS CODE WITHOUT 
+     WRITTEN PERMISSION OF A!K RESEARCH LABS -->
+<table width="100%" cellspacing="0" cellpadding="0" 
+style="margin-top: 0pt; border-collapse: collapse;"> 
+<tr> <td align="right" style="background-color:white; border-top: 1px solid gray;"> 
+<a href="http://chm2web.aklabs.com" target="_blank" style="font-family: sans-serif;  font-size: 11px; text-decoration: none;"><font color="gray">Converted from CHM to HTML with <b>chm2web Pro 2.85 (unicode)</b></font></a>
+</td></tr></table> 
+<!-- /CHM2WEB -->
+
+</body>
+</html>

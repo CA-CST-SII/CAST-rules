@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="keywords" content="online documentation, web online help, web help, chm2web" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<meta name="generator" content="chm2web Pro 2.85 (unicode)" />
+<meta http-equiv="Content-Language" content="en">
+
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>How to enable the XXL tables Quality Rules using the Table
+Size Folder option</title>
+<link rel="stylesheet" href="../../files/helpindex.css" type=
+"text/css">
+<link rel="stylesheet" href="../../default.css" type="text/css">
+
+<script type="text/JavaScript" src="../../files/supply.js"></script>
+<script type="text/JavaScript">
+chmtop.c2wtopf.pageid = "misc/tablesizefolder.htm";
+</script>
+
+</head>
+<body><script type="text/JavaScript"> 
+if (window.name != "content") 
+  document.write(" <table width=\"100%\" bgcolor=\"#e1e1e1\"cellspacing=\"2\" cellpadding=\"0\" style=\"border-collapse: collapse; font-family: sans-serif; font-size: 14px; color: #000000; text-decoration: none;  \"> <tr> <td align=\"center\" style=\"border-bottom: 2px solid gray\" > <br>&nbsp;Click <a href=\"../../index.html?page=source%2Fmisc%2Ftablesizefolder.htm\">here</a> to show toolbars of the Web Online Help System: <a href=\"../../index.html?page=source%2Fmisc%2Ftablesizefolder.htm\">show toolbars</a><br>&nbsp;</td></tr></table><br> "); 
+</script>
+<!-- !chm2web! -->
+
+<h4>How to enable the XXL tables Quality Rules using the Table Size
+Folder option</h4>
+
+<hr>
+
+<p>XXL tables Quality Rules are performance related Quality Rules
+that help detect incorrect SQL queries running on XXL tables.</p>
+
+<p>XXL tables are extremely large tables, which contain a huge
+amount of data. The threshold that determines when a table is
+considered to contain a huge amount of data can be configured by
+the user (in the CAST Management Studio using the Assessment Model
+editor - the default is 100000).</p>
+
+<p>In order to enable these XXL tables Quality Rules it is
+necessary to provide the <b>Snapshot Preparation Assistant</b> in
+<b>CAST Analysis Manager</b> with the table row size information.
+This can be done using the <b>Table Size Folder</b> option in the
+<b>Job Definition page</b>. This folder will then contain XML files
+defining your table row size information. These XML files must use
+the extension .SQLTABLESIZE - a syntactically correct example file
+is displayed <a href="sqltablesize.htm">here</a> (for Microsoft SQL
+Server, Oracle Server, Sybase ASE, IBM-DB2, and IBM-zOS) and
+<a href="">here</a> (for SAP)</p>
+
+<p><img border="0" src="images/tablesizefolder.gif" width="519"
+height="162">
+</p>
+
+<p>See the <b>Job Definition page</b> in the on-line Help for
+<b>CAST Analysis Manager</b> for more precise information about
+this option.</p>
+
+<h5>Determining server and database/schema names to use in the
+.SQLTABLESIZE files</h5>
+
+<p>The <b>server</b>, <b>database</b> and <b>schema</b> nodes in
+the .SQLTABLESIZE file must match the information stored in the
+CAST Analysis Service following an initial analysis. You can
+determine this information in several ways:</p>
+
+<ul>
+<li><b>Using CAST Enlighten</b> &gt; use the <b>Property window</b>
+(right click a table in the Graphical View or in the Technical
+Browser and select Properties or select the object and press F12)
+to view the information required, for example for Oracle Server
+with the legacy PL/SQL Server:<br>
+<br>
+<img border="0" src="images/enlighten.jpg" width="322" height=
+"61"><br>
+&nbsp;</li>
+
+<li><b>View table full names in CAST Enlighten</b>&gt; The full
+names of tables contain the required information. For example for
+Microsoft SQL Server:<br>
+<br>
+<b>WESLEY.CASTPUBS..roysched</b> =
+<b>SERVER.DATABASE..table</b></li>
+
+<li><b>Using CAST System Views</b> &gt; You can query the CAST
+System View (CSV) <b>CDT_OBJECTS</b> to extract the information you
+need, for example:</li>
+</ul>
+
+<pre>
+Select OBJECT_NAME
+From CDT_OBJECTS 
+Where OBJECT_TYPE_STR = 'SQL Server Database'
+</pre>
+
+<p><b>Notes</b>
+</p>
+
+<ul>
+<li>Note that when working in an Oracle Server environment please
+ensure you know whether the schema objects were analyzed with the
+legacy PL/SQL Analyzer or the SQL Analyzer. The .SQLTABLESIZE file
+has specific configuration for each, and note that the method of
+determining the required server/schema names will differ on
+each.</li>
+</ul>
+
+<hr>
+
+<p align="right"><a href="http://www.castsoftware.com" target=
+"_blank"><img border="0" src="../cast.gif" alt="CAST Website"
+width="174" height="21"></a>
+</p>
+
+<script type="text/JavaScript">
+var fe = FindFrame("toc", top);
+if ((fe != null) && (chmtop.c2wtopf.jstree != null)) {
+  if (chmtop.c2wtopf.FITEMS[chmtop.c2wtopf.pagenum] != chmtop.c2wtopf.pageid)
+    chmtop.c2wtopf.jstree.OpenTreeNode("source/" + chmtop.c2wtopf.pageid);
+}
+</script>
+
+<!-- CHM2WEB -->
+<!-- DO NOT DELETE OR MODIFY THIS CODE WITHOUT 
+     WRITTEN PERMISSION OF A!K RESEARCH LABS -->
+<table width="100%" cellspacing="0" cellpadding="0" 
+style="margin-top: 0pt; border-collapse: collapse;"> 
+<tr> <td align="right" style="background-color:white; border-top: 1px solid gray;"> 
+<a href="http://chm2web.aklabs.com" target="_blank" style="font-family: sans-serif;  font-size: 11px; text-decoration: none;"><font color="gray">Converted from CHM to HTML with <b>chm2web Pro 2.85 (unicode)</b></font></a>
+</td></tr></table> 
+<!-- /CHM2WEB -->
+
+</body>
+</html>

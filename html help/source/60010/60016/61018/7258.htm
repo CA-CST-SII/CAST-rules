@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="keywords" content="online documentation, web online help, web help, chm2web" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<meta name="generator" content="chm2web Pro 2.85 (unicode)" />
+
+<meta http-equiv="Content-Language" content="en">
+<title>DataReader must be called using
+CommandBehavior.CloseConnection enumeration</title>
+<link rel="stylesheet" href="../../../../files/helpindex.css" type=
+"text/css">
+<link rel="stylesheet" href="../../../../default.css" type=
+"text/css">
+
+<script type="text/JavaScript" src="../../../../files/supply.js"></script>
+<script type="text/JavaScript">
+chmtop.c2wtopf.pageid = "60010/60016/61018/7258.htm";
+</script>
+
+</head>
+<body><script type="text/JavaScript"> 
+if (window.name != "content") 
+  document.write(" <table width=\"100%\" bgcolor=\"#e1e1e1\"cellspacing=\"2\" cellpadding=\"0\" style=\"border-collapse: collapse; font-family: sans-serif; font-size: 14px; color: #000000; text-decoration: none;  \"> <tr> <td align=\"center\" style=\"border-bottom: 2px solid gray\" > <br>&nbsp;Click <a href=\"../../../../index.html?page=source%2F60010%2F60016%2F61018%2F7258.htm\">here</a> to show toolbars of the Web Online Help System: <a href=\"../../../../index.html?page=source%2F60010%2F60016%2F61018%2F7258.htm\">show toolbars</a><br>&nbsp;</td></tr></table><br> "); 
+</script>
+<!-- !chm2web! -->
+
+<h4>DataReader must be called using CommandBehavior.CloseConnection
+enumeration</h4>
+
+<hr>
+
+<h5>Technology</h5>
+
+<p>.Net</p>
+
+<h5>Unified Status</h5>
+
+<p>N/A</p>
+
+<h5>XXL Status</h5>
+
+<p>N/A</p>
+
+<h5>Critical Quality Rule</h5>
+
+<p>No</p>
+
+<h5>Weight in Parent Tech. Criterion</h5>
+
+<p>4</p>
+
+<h5>Rationale</h5>
+
+<p>It is highly recommended to tie the lifetime of the connection
+to the SqlDataReader object, by passing the
+CommandBehavior.CloseConnection enumerated value to the
+ExecuteReader method. What the CommandBehavior.CloseConnection does
+is close the underlying connection whenever the reader is closed.
+It is quite easy to forget to close database connections, and
+thereby waste resources that may be quite scarce, leading to
+serious application availability and stability issues.</p>
+
+<h5>Description</h5>
+
+<p>The purpose of this quality rule is to detect calls to the
+DataReader's ExecuteReader method made without the use the
+CommandBehavior.CloseConnection style. This quality rule is valid
+for any class that the inherit directly or indirectly from
+IDataReader including SqlDataReader, OleDbDataReader,
+OracleDataReader, OdbcDataReader.</p>
+
+<h5>Remediation</h5>
+
+<p>Use theCommandBehavior.CloseConnection call style when calling
+the ExecuteReader method.</p>
+
+<h5>Reference</h5>
+
+<p>.NET Data Access Architecture Guide
+http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dnbda/html/daag.asp
+Know Dot Net - IDataReader and the CommandBehavior Enumeration
+http://www.knowdotnet.com/articles/schemas2.html</p>
+
+<h5>Sample</h5>
+
+<pre>
+String strConn =
+ConfigurationSettings.AppSettings["myConnection"].ToString();
+SqlConnection sqlConn = new SqlConnection(strConn);
+
+SqlCommand sqlComm = new SqlCommand("p_my_procedure", sqlConn);
+sqlComm.CommandType = CommandType.StoredProcedure;
+
+sqlComm.Parameters.Add(new SqlParameter("@bitSomeResult", SqlDbType.Bit));
+sqlComm.Parameters["@bitSomeResult"].Direction = ParameterDirection.Output;
+
+sqlConn.Open();
+SqlDataReader dr = sqlComm.ExecuteReader();
+
+String strSomeResult =
+sqlComm.Parameters["@bitSomeResult"].Value.ToString(); 
+
+if (strSomeResult.ToLower() == "True".ToLower())
+{
+//Do something
+}
+else
+{
+//Do something else
+}
+
+sqlConn.Close();
+</pre>
+
+<h5>Remediation sample</h5>
+
+<pre>
+SqlDataReader reader;
+SqlCommand cmd = new SqlCommand("SELECT Facility FROM Tbl_Facilities", cn);
+try
+{
+   if(cn.State != ConnectionState.Open){cn.Open();}
+}
+catch(SqlException ex)
+{
+    Debug.Assert(false, ex.ToString);
+}
+try
+{ 
+    reader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+}
+catch(System.Exception ex)
+{
+    Debug.Assert(false, ex.ToString());
+}
+while(reader.Read())
+{
+       Console.WriteLine(reader.GetString(0));
+}
+reader.Close;
+Console.WriteLine(cn.State);//Closed
+}
+</pre>
+
+<h5>Output</h5>
+
+<p>List all methods where a call to ExecuteReader without the
+CommandBehavior.CloseConnection parameter.</p>
+
+<h5>Total</h5>
+
+<p>Number of methods with a call to ExecuteReader</p>
+
+<h5>Metric ID</h5>
+
+<p>7258</p>
+
+<hr>
+
+<p align="right"><a href="http://www.castsoftware.com" target=
+"_blank"><img border="0" src="../../../cast.gif" alt="CAST Website"
+width="174" height="21"></a>
+</p>
+
+<script type="text/JavaScript">
+var fe = FindFrame("toc", top);
+if ((fe != null) && (chmtop.c2wtopf.jstree != null)) {
+  if (chmtop.c2wtopf.FITEMS[chmtop.c2wtopf.pagenum] != chmtop.c2wtopf.pageid)
+    chmtop.c2wtopf.jstree.OpenTreeNode("source/" + chmtop.c2wtopf.pageid);
+}
+</script>
+
+<!-- CHM2WEB -->
+<!-- DO NOT DELETE OR MODIFY THIS CODE WITHOUT 
+     WRITTEN PERMISSION OF A!K RESEARCH LABS -->
+<table width="100%" cellspacing="0" cellpadding="0" 
+style="margin-top: 0pt; border-collapse: collapse;"> 
+<tr> <td align="right" style="background-color:white; border-top: 1px solid gray;"> 
+<a href="http://chm2web.aklabs.com" target="_blank" style="font-family: sans-serif;  font-size: 11px; text-decoration: none;"><font color="gray">Converted from CHM to HTML with <b>chm2web Pro 2.85 (unicode)</b></font></a>
+</td></tr></table> 
+<!-- /CHM2WEB -->
+
+</body>
+</html>

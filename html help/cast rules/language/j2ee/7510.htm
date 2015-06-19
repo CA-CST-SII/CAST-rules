@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="keywords" content="online documentation, web online help, web help, chm2web" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<meta name="generator" content="chm2web Pro 2.85 (unicode)" />
+
+<meta http-equiv="Content-Language" content="en">
+<title>Use only Hibernate API to access to the database</title>
+<link rel="stylesheet" href="../../../files/helpindex.css" type=
+"text/css">
+<link rel="stylesheet" href="../../../default.css" type="text/css">
+
+<script type="text/JavaScript" src="../../../files/supply.js"></script>
+<script type="text/JavaScript">
+chmtop.c2wtopf.pageid = "language/j2ee/7510.htm";
+</script>
+
+</head>
+<body><script type="text/JavaScript"> 
+if (window.name != "content") 
+  document.write(" <table width=\"100%\" bgcolor=\"#e1e1e1\"cellspacing=\"2\" cellpadding=\"0\" style=\"border-collapse: collapse; font-family: sans-serif; font-size: 14px; color: #000000; text-decoration: none;  \"> <tr> <td align=\"center\" style=\"border-bottom: 2px solid gray\" > <br>&nbsp;Click <a href=\"../../../index.html?page=cast%20rules%2Flanguage%2Fj2ee%2F7510.htm\">here</a> to show toolbars of the Web Online Help System: <a href=\"../../../index.html?page=cast%20rules%2Flanguage%2Fj2ee%2F7510.htm\">show toolbars</a><br>&nbsp;</td></tr></table><br> "); 
+</script>
+<!-- !chm2web! -->
+
+<h4>Use only Hibernate API to access to the database</h4>
+
+<hr>
+
+<h5>Technology</h5>
+
+<p>JEE</p>
+
+<h5>Unified Status</h5>
+
+<p>N/A</p>
+
+<h5>XXL Status</h5>
+
+<p>N/A</p>
+
+<h5>Critical Quality Rule</h5>
+
+<p>No</p>
+
+<h5>Weight in Parent Tech. Criterion</h5>
+
+<p>9</p>
+
+<h5>Rationale</h5>
+
+<p>Using Hibernate API only brings several benefits: -
+Performances: Hibernate provides potential for caching that is
+expected to outperforms queries that use direct JDBC access. -
+Implementation: object mapping takes care of mapping the JDBC
+result sets to graph of persistent objects. Using direct JDBC API
+means writing the tedious code by hand to transform a JDBC
+ResultSet to an object graph. - Database independence: the code can
+be used with all supported databases - Transparent support of JDBC
+and JTA in both managed and non-managed environments</p>
+
+<h5>Description</h5>
+
+<p>Reports all objects that reference the following java.sql
+interface and their methods - java.sql.Connection -
+java.sql.Statement - java.sql.PreparedStatement -
+java.sql.CallableStatement except when they are used as parameters
+of hibernate methods (methods whose FQDN begin with
+net.sf.hibernate or org.hibernate) The threshold permits to add
+other interfaces or classes from other framework to the previous
+list.</p>
+
+<h5>Remediation</h5>
+
+<p>If you really need to use SQL for feature that are not supported
+by Hibernate (like specifying SQL query hints or hierarchical
+queries such as Oracle CONNECT BY clause), you can use either SQL
+queries defined in the hibernate XML file or by using native SQL
+with org.hibernate.Session.createSQLQuery(java.lang.String
+queryString).</p>
+
+<h5>Reference</h5>
+
+<p>Hibernate in Action (ISBN 1932394-15-X)</p>
+
+<h5>Sample</h5>
+
+<pre>
+List&lt;EmployeeBean&gt; employeeList = new ArrayList&lt;EmployeeBean&gt;(); 
+
+Connection con = DriverManager.getConnection(url); 
+Statement stmt = con.createStatement();
+// VIOLATION
+ResultSet rs = stmt.executeQuery("SELECT * FROM COMPANY"); 
+while ( rs.next() ) { 
+   EmployeeBean eb = new Employeebean(); 
+   eb.setName(rs.getString("name")); 
+   eb.setSalary(rs.getFloat("salary")); 
+   employeeList.add(eb); 
+}
+</pre>
+
+<h5>Remediation sample</h5>
+
+<pre>
+Session session = sessionFactory.openSession(); 
+
+Query query = session.createQuery("from EmployeeBean"); 
+// FIXED
+List&lt;EmployeeBean&gt; finalList = query.list();
+</pre>
+
+<h5>Output</h5>
+
+<p>List objects that use other API than hibernate API It provides
+the following information: - Artifact Full Name - Number of
+reference</p>
+
+<h5>Total</h5>
+
+<p>The total number of artifacts that violate this rule plus the
+artifacts that reference net.sf.hibernate.Query,
+org.hiberate.Query, net.sf.hibernate.Session,
+org.hibernate.Session</p>
+
+<h5>Metric ID</h5>
+
+<p>7510</p>
+
+<hr>
+
+<p align="right"><a href="http://www.castsoftware.com" target=
+"_blank"><img border="0" src="../../cast.gif" alt="CAST Website"
+width="174" height="21"></a>
+</p>
+
+<script type="text/JavaScript">
+var fe = FindFrame("toc", top);
+if ((fe != null) && (chmtop.c2wtopf.jstree != null)) {
+  if (chmtop.c2wtopf.FITEMS[chmtop.c2wtopf.pagenum] != chmtop.c2wtopf.pageid)
+    chmtop.c2wtopf.jstree.OpenTreeNode("cast rules/" + chmtop.c2wtopf.pageid);
+}
+</script>
+
+<!-- CHM2WEB -->
+<!-- DO NOT DELETE OR MODIFY THIS CODE WITHOUT 
+     WRITTEN PERMISSION OF A!K RESEARCH LABS -->
+<table width="100%" cellspacing="0" cellpadding="0" 
+style="margin-top: 0pt; border-collapse: collapse;"> 
+<tr> <td align="right" style="background-color:white; border-top: 1px solid gray;"> 
+<a href="http://chm2web.aklabs.com" target="_blank" style="font-family: sans-serif;  font-size: 11px; text-decoration: none;"><font color="gray">Converted from CHM to HTML with <b>chm2web Pro 2.85 (unicode)</b></font></a>
+</td></tr></table> 
+<!-- /CHM2WEB -->
+
+</body>
+</html>

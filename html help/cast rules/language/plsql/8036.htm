@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="keywords" content="online documentation, web online help, web help, chm2web" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<meta name="generator" content="chm2web Pro 2.85 (unicode)" />
+
+<meta http-equiv="Content-Language" content="en">
+<title>Avoid improperly written triangular joins with XXL tables in
+PL/SQL code</title>
+<link rel="stylesheet" href="../../../files/helpindex.css" type=
+"text/css">
+<link rel="stylesheet" href="../../../default.css" type="text/css">
+
+<script type="text/JavaScript" src="../../../files/supply.js"></script>
+<script type="text/JavaScript">
+chmtop.c2wtopf.pageid = "language/plsql/8036.htm";
+</script>
+
+</head>
+<body><script type="text/JavaScript"> 
+if (window.name != "content") 
+  document.write(" <table width=\"100%\" bgcolor=\"#e1e1e1\"cellspacing=\"2\" cellpadding=\"0\" style=\"border-collapse: collapse; font-family: sans-serif; font-size: 14px; color: #000000; text-decoration: none;  \"> <tr> <td align=\"center\" style=\"border-bottom: 2px solid gray\" > <br>&nbsp;Click <a href=\"../../../index.html?page=cast%20rules%2Flanguage%2Fplsql%2F8036.htm\">here</a> to show toolbars of the Web Online Help System: <a href=\"../../../index.html?page=cast%20rules%2Flanguage%2Fplsql%2F8036.htm\">show toolbars</a><br>&nbsp;</td></tr></table><br> "); 
+</script>
+<!-- !chm2web! -->
+
+<h4>Avoid improperly written triangular joins with XXL tables in
+PL/SQL code</h4>
+
+<hr>
+
+<h5>Technology</h5>
+
+<p>Forms, PL/SQL</p>
+
+<h5>Unified Status</h5>
+
+<p>N/A</p>
+
+<h5>XXL Status</h5>
+
+<p>XXL</p>
+
+<h5>Critical Quality Rule</h5>
+
+<p>No</p>
+
+<h5>Weight in Parent Tech. Criterion</h5>
+
+<p>4</p>
+
+<h5>Rationale</h5>
+
+<p>Improperly written Triangular Joins are worse than even Cursors
+or While Loops and can bring a CPU and Disk System right to it's
+knees. their processing algorithm is close to quadratic complexity.
+For very small counts, the number of internal rows spawned are
+nearly trivial. But, it doesn't take very many rows to spawn
+nightmarish numbers of internal rows that can bring a server to its
+knees. There's danger in thinking that just avoiding the loop leads
+to set based code. Triangular Joins are a form of "Hidden row by
+row agonizing row" that can and will crush performance in the face
+of even the smallest scalability expectations.</p>
+
+<h5>Description</h5>
+
+<p>List all SQL artifacts having a query that includes improper
+triangular join. A Triangular Join is nothing more than about half
+of a Cross-Join. The "shape" of the Triangular Join depends on the
+relationship of &lt; or &gt;, &lt;= or &gt;=, or &lt; &gt; between
+tables. the diag should detect: - &lt;= or &gt;= or "Equality"
+Triangular Join - &lt; or &gt; "Inequality" Triangular Join - &lt;
+&gt; "Not Equal" Triangular Join They appear in the SELECT list as
+correlated subqueries usually with a stand-alone inequality of some
+sort. They can also appear in WHERE clauses with the same type of
+standalone inequality. With some restraint and the right criteria,
+Triangular Joins can be used. As a consequence we will only detect
+statements that include improperly written triangular joins i.e
+that include at least one triangular join and nothing else in terms
+of restrictive criteria .... .</p>
+
+<h5>Remediation</h5>
+
+<p>restrict the conditions using other critersion</p>
+
+<h5>Sample</h5>
+
+<pre>
+SELECT x.OrderID, x.Freight, 
+        (SELECT SUM(y.Freight) FROM dbo.Orders y
+          WHERE y.OrderID &lt;= x.OrderID) AS RunningTotal,
+        (SELECT COUNT(y.Freight)
+           FROM dbo.Orders y
+          WHERE y.OrderID &lt;= x.OrderID) AS RunningCount
+  FROM dbo.Orders X
+ ORDER BY x.OrderID
+</pre>
+
+<h5>Output</h5>
+
+<p>List all Client-Server Artifacts having at least triangular
+join. Display the name of each faulty statement.</p>
+
+<h5>Total</h5>
+
+<p>The total procedure counts the number of Client-Server
+Artifacts</p>
+
+<h5>Metric ID</h5>
+
+<p>8036</p>
+
+<hr>
+
+<p align="right"><a href="http://www.castsoftware.com" target=
+"_blank"><img border="0" src="../../cast.gif" alt="CAST Website"
+width="174" height="21"></a>
+</p>
+
+<script type="text/JavaScript">
+var fe = FindFrame("toc", top);
+if ((fe != null) && (chmtop.c2wtopf.jstree != null)) {
+  if (chmtop.c2wtopf.FITEMS[chmtop.c2wtopf.pagenum] != chmtop.c2wtopf.pageid)
+    chmtop.c2wtopf.jstree.OpenTreeNode("cast rules/" + chmtop.c2wtopf.pageid);
+}
+</script>
+
+<!-- CHM2WEB -->
+<!-- DO NOT DELETE OR MODIFY THIS CODE WITHOUT 
+     WRITTEN PERMISSION OF A!K RESEARCH LABS -->
+<table width="100%" cellspacing="0" cellpadding="0" 
+style="margin-top: 0pt; border-collapse: collapse;"> 
+<tr> <td align="right" style="background-color:white; border-top: 1px solid gray;"> 
+<a href="http://chm2web.aklabs.com" target="_blank" style="font-family: sans-serif;  font-size: 11px; text-decoration: none;"><font color="gray">Converted from CHM to HTML with <b>chm2web Pro 2.85 (unicode)</b></font></a>
+</td></tr></table> 
+<!-- /CHM2WEB -->
+
+</body>
+</html>
